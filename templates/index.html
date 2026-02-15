@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Text Summarizer & Quiz</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: Geneva, sans-serif;
+    background: #a8dadc;
+    min-height: 100vh;
+    padding: 20px;
+    color: #1a1a1a;
+}
+.container { max-width: 900px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 30px; color: #1a1a1a; }
+.header h1 { font-size: 2.5em; margin-bottom: 10px; }
+.header p { font-size: 1.1em; }
+
+.main-card {
+    background: #f0f8ff;
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 8px 30px rgba(168, 218, 220, 0.3);
+    margin-bottom: 20px;
+}
+
+.input-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 3px solid #a8dadc;
+    padding-bottom: 0;
+}
+
+.tab-button {
+    padding: 12px 20px;
+    background: transparent;
+    border-color: #08afec;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-family: Geneva, sans-serif;
+    font-size: 1em;
+    font-weight: 600;
+    color: #1a1a1a;
+    transition: all 0.3s;
+    margin-bottom: -3px;
+}
+
+.tab-button:hover { background: #dbefff; }
+.tab-button.active { border-bottom-color: #7fc6cc; }
+
+.tab-content { display: none; margin-bottom: 20px; }
+.tab-content.active { display: block; }
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 15px;
+    border: 2px solid #a8dadc;
+    border-radius: 12px;
+    font-size: 1em;
+    resize: vertical;
+    background: #dbefff;
+    color: #1a1a1a;
+    font-family: Geneva, sans-serif;
+}
+
+textarea:focus { outline: none; border-color: #7fc6cc; background: #e0f0f5; }
+
+.url-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #a8dadc;
+    border-radius: 12px;
+    font-size: 1em;
+    background: #dbefff;
+    color: #1a1a1a;
+}
+
+.url-input:focus { outline: none; border-color: #7fc6cc; background: #e0f0f5; }
+
+.file-upload-area {
+    border: 3px dashed #a8dadc;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    background: #dbefff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-upload-area:hover { border-color: #7fc6cc; background: #e0f0f5; }
+.file-upload-area.dragover { border-color: #7fc6cc; background: #e0f0f5; transform: scale(1.02); }
+
+.file-upload-icon { font-size: 3em; margin-bottom: 10px; }
+.file-upload-text { font-weight: 600; margin-bottom: 5px; }
+.file-upload-hint { font-size: 0.9em; color: #555; }
+.file-input { display: none; }
+
+.file-selected {
+    margin-top: 15px;
+    padding: 15px;
+    background: #cce7eb;
+    border-radius: 8px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.file-selected.show { display: flex; }
+.file-info { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+
+.remove-file {
+    background: #ffc0cb;
+    color: #1a1a1a;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.remove-file:hover { background: #ffb3c1; }
+
+.quiz-config {
+    background: #e0f0f5;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.quiz-config label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.quiz-config select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #a8dadc;
+    border-radius: 8px;
+    font-size: 1em;
+    background: white;
+    margin-bottom: 15px;
+}
+
+.level-options { display: flex; gap: 10px; margin-top: 15px; }
+.level-card {
+    flex: 1;
+    border: 3px solid #cce7eb;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    background: #e6f3f5;
+    transition: 0.3s;
+}
+.level-card.active { border-color: #a8dadc; background: #dbefff; }
+
+button {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+.btn-primary { background: #a8dadc; color: #1a1a1a; }
+.btn-primary:hover { background: #7fc6cc; }
+.btn-primary:disabled { background: #cce7eb; cursor: not-allowed; }
+
+.btn-secondary { background: #dbefff; color: #1a1a1a; }
+.btn-secondary:hover { background: #b0d4dc; }
+
+.loading { display: none; text-align: center; padding: 30px; background: #e0f0f5; border-radius: 12px; margin-top: 20px; }
+.loading.show { display: block; }
+.spinner { border: 4px solid #dbefff; border-top: 4px solid #a8dadc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.results { display: none; margin-top: 20px; }
+.results.show { display: block; }
+.summary-box { 
+    background: #dbefff; 
+    padding: 25px; 
+    border-radius: 12px; 
+    margin-bottom: 20px;
+    line-height: 1.8;
+    font-size: 1.05em;
+}
+
+.summary-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #a8dadc;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.btn-quiz {
+    background: #90e0a8;
+    color: #1a1a1a;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    margin-top: 20px;
+}
+
+.btn-quiz:hover {
+    background: #70d088;
+}
+
+.error { background: #ffc0cb; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; font-weight: 600; }
+.error.show { display: block; }
+
+.level-name { font-weight: 600; }
+.level-description { font-size: 0.9em; }
+
+@media(max-width: 768px){ 
+    .level-options { flex-direction: column; } 
+    .input-tabs { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Smart Text Summarizer & Quiz</h1>
+    </div>
+
+    <div class="main-card">
+        <div class="error" id="errorBox"></div>
+
+        <div class="input-tabs">
+            <button type="button" class="tab-button active" onclick="switchTab('text')">Text Input</button>
+            <button type="button" class="tab-button" onclick="switchTab('url')">URL</button>
+            <button type="button" class="tab-button" onclick="switchTab('file')">File Upload</button>
+        </div>
+
+        <form id="summarizerForm">
+            <!-- Text Input Tab -->
+            <div id="text-tab" class="tab-content active">
+                <label class="section-title">Input Text</label>
+                <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+                <p style="margin-top:5px; font-size:0.9em; color:#333;">
+                    Input Word Count: <span id="inputWordCount">0</span>
+                </p>
+            </div>
+
+            <!-- URL Input Tab -->
+            <div id="url-tab" class="tab-content">
+                <label class="section-title">Enter Website URL</label>
+                <input type="url" id="inputUrl" class="url-input" placeholder="https://example.com/article">
+            </div>
+
+            <!-- File Upload Tab -->
+            <div id="file-tab" class="tab-content">
+                <label class="section-title">Upload File</label>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="file-upload-icon"></div>
+                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                    <div class="file-upload-hint">Supports: PDF, TXT (Max 10MB)</div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
+                <div class="file-selected" id="fileSelected">
+                    <div class="file-info">
+                        <span></span>
+                        <span id="fileName"></span>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile()">Remove</button>
+                </div>
+            </div>
+
+            <label class="section-title" style="display:block; margin-top:20px;">Summarization Level</label>
+            <div class="level-options">
+                <div class="level-card active">
+                    <input type="radio" name="level" value="abstract" checked hidden>
+                    <div class="level-name">Abstract</div>
+                    <div class="level-description">Brief (30-60 words)</div>
+                </div>
+                <div class="level-card">
+                    <input type="radio" name="level" value="summary" hidden>
+                    <div class="level-name">Summary</div>
+                    <div class="level-description">Balanced (80-130 words)</div>
+                </div>
+                <div class="level-card">
+                    <input type="radio" name="level" value="article" hidden>
+                    <div class="level-name">Article</div>
+                    <div class="level-description">Detailed (150-250 words)</div>
+                </div>
+            </div>
+
+            <div class="quiz-config">
+                <label>Number of Quiz Questions:</label>
+                <select id="numQuestions">
+                    <option value="3">3 Questions</option>
+                    <option value="5" selected>5 Questions</option>
+                    <option value="10">10 Questions</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">Generate Summary & Quiz</button>
+            <button type="button" class="btn-secondary" onclick="resetForm()">Clear</button>
+        </form>
+
+        <div class="loading" id="loadingBox">
+            <div class="spinner"></div>
+            <p id="loadingText">Generating summary and questions...</p>
+        </div>
+
+        <div class="results" id="resultsBox">
+            <div class="summary-box">
+                <strong style="font-size: 1.1em;">Summary:</strong>
+                <p id="summaryText" style="margin-top: 10px;"></p>
+                <div class="summary-meta">
+                    <span>Word Count: <strong id="wordCount">0</strong></span>
+                    <span>Level: <strong id="summaryLevel">-</strong></span>
+                </div>
+            </div>
+            <button type="button" class="btn-quiz" onclick="startQuiz()">Start Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTab = 'text';
+let selectedFile = null;
+let quizData = null;
+
+// Tab switching
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById(`${tab}-tab`).classList.add('active');
+    hideError();
+}
+
+// File upload handling
+const fileUploadArea = document.getElementById('fileUploadArea');
+const fileInput = document.getElementById('fileInput');
+const fileSelected = document.getElementById('fileSelected');
+const fileName = document.getElementById('fileName');
+
+fileUploadArea.addEventListener('click', () => fileInput.click());
+fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); fileUploadArea.classList.add('dragover'); });
+fileUploadArea.addEventListener('dragleave', () => fileUploadArea.classList.remove('dragover'));
+fileUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileUploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files[0]);
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+});
+
+function handleFileSelect(file) {
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) { showError('File size must be less than 10MB'); return; }
+    const validTypes = ['application/pdf', 'text/plain'];
+    if (!validTypes.includes(file.type)) { showError('Only PDF and TXT files are supported'); return; }
+    selectedFile = file;
+    fileName.textContent = file.name;
+    fileSelected.classList.add('show');
+    hideError();
+}
+
+function removeFile() {
+    selectedFile = null;
+    fileInput.value = '';
+    fileSelected.classList.remove('show');
+}
+
+// Level card selection
+document.querySelectorAll('.level-card').forEach(card=>{
+    card.addEventListener('click',function(){
+        document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('active'));
+        this.classList.add('active');
+        this.querySelector('input[type="radio"]').checked=true;
+    });
+});
+
+// Live input word count
+const inputText = document.getElementById('inputText');
+const inputWordCount = document.getElementById('inputWordCount');
+inputText.addEventListener('input', () => {
+    const text = inputText.value.trim();
+    const words = text.split(/\s+/).filter(Boolean);
+    inputWordCount.textContent = words.length;
+});
+
+// Form submission
+document.getElementById('summarizerForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    
+    const level = document.querySelector('input[name="level"]:checked').value;
+    const numQuestions = document.getElementById('numQuestions').value;
+    let formData = new FormData();
+    formData.append('level', level);
+    formData.append('num_questions', numQuestions);
+
+    if (currentTab === 'text') {
+        const text = document.getElementById('inputText').value.trim();
+        if (!text) { showError('Please enter some text'); return; }
+        if (text.length < 50) { showError('Please enter at least 50 characters'); return; }
+        formData.append('text', text);
+        formData.append('input_type', 'text');
+    } else if (currentTab === 'url') {
+        const url = document.getElementById('inputUrl').value.trim();
+        if (!url) { showError('Please enter a URL'); return; }
+        if (!isValidUrl(url)) { showError('Please enter a valid URL'); return; }
+        formData.append('url', url);
+        formData.append('input_type', 'url');
+    } else if (currentTab === 'file') {
+        if (!selectedFile) { showError('Please select a file'); return; }
+        formData.append('file', selectedFile);
+        formData.append('input_type', 'file');
+    }
+
+    hideError(); showLoading(); hideResults();
+
+    try {
+        const response = await fetch('/summarize', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.error) { showError(data.error); }
+        else { displayResults(data); }
+    } catch(e) { 
+        console.error('Error:', e);
+        showError('Error: ' + e.message); 
+    } finally { hideLoading(); }
+});
+
+function isValidUrl(string) {
+    try { new URL(string); return true; } catch (_) { return false; }
+}
+
+function showLoading() { 
+    document.getElementById('loadingBox').classList.add('show'); 
+    document.getElementById('submitBtn').disabled = true;
+}
+
+function hideLoading() { 
+    document.getElementById('loadingBox').classList.remove('show'); 
+    document.getElementById('submitBtn').disabled = false;
+}
+
+function showResults() { document.getElementById('resultsBox').classList.add('show'); }
+function hideResults() { document.getElementById('resultsBox').classList.remove('show'); }
+function showError(msg) { const e=document.getElementById('errorBox'); e.textContent=msg; e.classList.add('show'); }
+function hideError() { document.getElementById('errorBox').classList.remove('show'); }
+
+function displayResults(data) {
+    document.getElementById('summaryText').textContent = data.summary;
+    document.getElementById('wordCount').textContent = data.word_count || data.summary.split(' ').length;
+    document.getElementById('summaryLevel').textContent = data.level.charAt(0).toUpperCase() + data.level.slice(1);
+    quizData = data.questions;
+    showResults();
+    document.getElementById('resultsBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function startQuiz() {
+    if (!quizData || quizData.length === 0) {
+        showError('No quiz questions available');
+        return;
+    }
+    
+    // Store quiz data and navigate to quiz page
+    sessionStorage.setItem('quizData', JSON.stringify(quizData));
+    window.location.href = '/quiz';
+}
+
+function resetForm() { 
+    document.getElementById('summarizerForm').reset(); 
+    document.getElementById('inputText').value = '';
+    document.getElementById('inputUrl').value = '';
+    removeFile();
+    hideResults(); 
+    hideError(); 
+    inputWordCount.textContent = '0';
+    quizData = null;
+    document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('active'));
+    document.querySelector('.level-card').classList.add('active'); 
+}
+</script>
+</body>
+</html>
