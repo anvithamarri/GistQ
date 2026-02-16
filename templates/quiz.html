@@ -3,278 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz - Test Your Knowledge</title>
+<title>Quiz - GistQ</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    font-family: Geneva, sans-serif;
-    background: #a8dadc;
+    font-family: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
+    background: #faf8f5;
     min-height: 100vh;
-    padding: 20px;
     color: #1a1a1a;
+    line-height: 1.6;
 }
-.container { max-width: 900px; margin: 0 auto; }
-.header { text-align: center; margin-bottom: 30px; color: #1a1a1a; }
-.header h1 { font-size: 2.5em; margin-bottom: 10px; }
+
+.container { 
+    max-width: 100%;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header { 
+    text-align: center; 
+    padding: 40px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.logo {
+    font-size: 2em;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 0.95em;
+    color: #999999;
+    font-weight: 300;
+}
 
 .progress-bar {
-    background: #e0f0f5;
-    height: 10px;
-    border-radius: 10px;
-    margin-bottom: 30px;
+    background: #f5f3f0;
+    height: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
-    background: #7fc6cc;
+    background: linear-gradient(90deg, #64b5f6, #90caf9);
     height: 100%;
-    transition: width 0.3s;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
 }
 
-.quiz-card {
-    background: #f0f8ff;
-    border-radius: 20px;
-    padding: 35px;
-    box-shadow: 0 8px 30px rgba(168, 218, 220, 0.3);
-    margin-bottom: 20px;
+.main-content {
+    flex: 1;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 60px 40px;
 }
 
 .question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #a8dadc;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .question-number {
-    font-size: 1.1em;
+    font-size: 0.75em;
     font-weight: 600;
-    color: #555;
+    color: #2196f3;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 .question-text {
-    font-size: 1.3em;
-    font-weight: 600;
-    margin-bottom: 25px;
-    line-height: 1.6;
+    font-size: 1.4em;
+    font-weight: 300;
+    margin-top: 24px;
+    line-height: 1.7;
     color: #1a1a1a;
 }
 
 .answer-input {
     width: 100%;
-    min-height: 120px;
-    padding: 15px;
-    border: 2px solid #a8dadc;
-    border-radius: 12px;
-    font-size: 1em;
+    min-height: 200px;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.05em;
     resize: vertical;
-    background: #dbefff;
+    background: transparent;
     color: #1a1a1a;
-    font-family: Geneva, sans-serif;
+    font-family: inherit;
+    line-height: 1.8;
+    transition: border-color 0.3s;
+    margin-bottom: 40px;
 }
 
 .answer-input:focus {
     outline: none;
-    border-color: #7fc6cc;
-    background: #e0f0f5;
+    border-bottom-color: #64b5f6;
+}
+
+.answer-input::placeholder {
+    color: #cccccc;
 }
 
 .answer-feedback {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 10px;
+    margin-bottom: 24px;
+    padding: 20px;
+    border-radius: 0;
     display: none;
-    font-weight: 600;
+    font-size: 0.95em;
+    border-left: 3px solid;
+    font-weight: 300;
+    line-height: 1.7;
 }
 
 .answer-feedback.show { display: block; }
 
 .answer-feedback.correct {
-    background: #d4edda;
-    border: 2px solid #28a745;
-    color: #155724;
+    background: #f0f7ff;
+    border-color: #64b5f6;
+    color: #1a1a1a;
 }
 
 .answer-feedback.incorrect {
-    background: #f8d7da;
-    border: 2px solid #dc3545;
-    color: #721c24;
+    background: #fff5f5;
+    border-color: #ffcccc;
+    color: #1a1a1a;
 }
 
 .correct-answer {
-    background: #e0f0f5;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
+    background: #f5f3f0;
+    padding: 20px;
+    border-radius: 0;
+    margin-bottom: 24px;
     display: none;
+    border-left: 3px solid #e8e6e3;
 }
 
 .correct-answer.show { display: block; }
 
 .correct-answer strong {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    color: #999999;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
+.correct-answer-text {
     color: #1a1a1a;
+    font-weight: 300;
+    line-height: 1.7;
 }
 
 .button-group {
     display: flex;
-    gap: 15px;
-    margin-top: 25px;
+    gap: 20px;
+    margin-top: 40px;
 }
 
-button {
-    padding: 12px 25px;
+.action-button {
+    flex: 1;
+    padding: 20px;
     font-size: 1em;
-    border: none;
-    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    background: transparent;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 400;
+    font-family: inherit;
     transition: all 0.3s;
-}
-
-.btn-check {
-    background: #90e0a8;
-    color: #1a1a1a;
-    flex: 1;
-}
-
-.btn-check:hover { background: #70d088; }
-.btn-check:disabled { background: #cce7eb; cursor: not-allowed; }
-
-.btn-next {
-    background: #a8dadc;
-    color: #1a1a1a;
-    flex: 1;
-    display: none;
-}
-
-.btn-next.show { display: block; }
-.btn-next:hover { background: #7fc6cc; }
-
-.btn-submit {
-    background: #ffa07a;
-    color: #1a1a1a;
-    flex: 1;
-    display: none;
-}
-
-.btn-submit.show { display: block; }
-.btn-submit:hover { background: #ff8c5a; }
-
-.btn-secondary {
-    background: #dbefff;
     color: #1a1a1a;
 }
 
-.btn-secondary:hover { background: #b0d4dc; }
+.action-button:hover {
+    background: #f0f7ff;
+    border-color: #90caf9;
+}
+
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-button:disabled:hover {
+    background: transparent;
+    border-color: #f0f0f0;
+}
+
+.action-button.primary {
+    background: linear-gradient(135deg, #64b5f6, #90caf9);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.25);
+}
+
+.action-button.primary:hover {
+    background: linear-gradient(135deg, #42a5f5, #64b5f6);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.35);
+    transform: translateY(-1px);
+}
+
+.action-button.secondary {
+    flex: 0 0 auto;
+    padding: 20px 30px;
+    color: #999999;
+}
+
+.action-button.secondary:hover {
+    color: #1a1a1a;
+}
 
 .results-card {
-    background: #f0f8ff;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 30px rgba(168, 218, 220, 0.3);
     text-align: center;
+    padding: 80px 40px;
     display: none;
 }
 
 .results-card.show { display: block; }
 
+.results-title {
+    font-size: 2em;
+    font-weight: 300;
+    margin-bottom: 60px;
+    color: #1a1a1a;
+}
+
 .score-circle {
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
     border-radius: 50%;
-    margin: 30px auto;
+    margin: 0 auto 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 3em;
-    font-weight: 700;
+    font-size: 4em;
+    font-weight: 200;
+    border: 2px solid #f0f0f0;
     position: relative;
+    transition: all 0.4s;
 }
 
 .score-circle.excellent {
-    background: linear-gradient(135deg, #90e0a8, #70d088);
-    color: white;
+    background: linear-gradient(135deg, #64b5f6, #90caf9);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 8px 24px rgba(33, 150, 243, 0.3);
 }
 
 .score-circle.good {
-    background: linear-gradient(135deg, #a8dadc, #7fc6cc);
-    color: white;
+    background: #f0f7ff;
+    color: #2196f3;
+    border-color: #90caf9;
 }
 
 .score-circle.needs-improvement {
-    background: linear-gradient(135deg, #ffa07a, #ff8c5a);
-    color: white;
+    background: #f5f3f0;
+    color: #666666;
+    border-color: #e8e6e3;
 }
 
 .score-label {
-    font-size: 0.3em;
-    font-weight: 600;
-    margin-top: 5px;
+    font-size: 0.2em;
+    font-weight: 400;
+    margin-top: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: inherit;
 }
 
 .results-message {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin: 20px 0;
+    font-size: 1.2em;
+    font-weight: 300;
+    margin: 40px 0;
+    color: #1a1a1a;
 }
 
 .results-details {
-    background: #dbefff;
-    padding: 20px;
-    border-radius: 12px;
-    margin: 20px 0;
+    max-width: 400px;
+    margin: 60px auto;
     text-align: left;
 }
 
 .detail-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #a8dadc;
+    padding: 20px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95em;
+    font-weight: 300;
 }
 
 .detail-item:last-child { border-bottom: none; }
 
-.btn-home {
-    background: #a8dadc;
-    color: #1a1a1a;
-    padding: 15px 40px;
-    font-size: 1.1em;
-    margin-top: 20px;
+.detail-item strong {
+    font-weight: 400;
 }
 
-.btn-home:hover { background: #7fc6cc; }
-
 @media(max-width: 768px){
-    .header h1 { font-size: 2em; }
-    .question-text { font-size: 1.1em; }
-    .score-circle { width: 150px; height: 150px; font-size: 2.5em; }
+    .logo { font-size: 1.8em; }
+    .main-content { padding: 40px 20px; }
+    .question-text { font-size: 1.2em; }
+    .score-circle { width: 200px; height: 200px; font-size: 3.5em; }
     .button-group { flex-direction: column; }
+    .results-card { padding: 60px 20px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Knowledge Quiz</h1>
-        <p>Test your understanding</p>
+        <div class="logo">GistQ</div>
+        <div class="subtitle">Knowledge Testing</div>
     </div>
 
-    <div class="progress-bar" id="progressBar">
+    <div class="progress-bar">
         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
     </div>
 
-    <div class="quiz-card" id="quizCard">
+    <div class="main-content" id="quizContent">
         <div class="question-header">
             <div class="question-number" id="questionNumber">Question 1 of 5</div>
+            <div class="question-text" id="questionText"></div>
         </div>
-
-        <div class="question-text" id="questionText"></div>
 
         <textarea 
             id="answerInput" 
@@ -283,31 +342,35 @@ button {
         </textarea>
 
         <div class="answer-feedback" id="feedback"></div>
-        <div class="correct-answer" id="correctAnswer"></div>
+        
+        <div class="correct-answer" id="correctAnswer">
+            <strong>Correct Answer</strong>
+            <div class="correct-answer-text" id="correctAnswerText"></div>
+        </div>
 
         <div class="button-group">
-            <button class="btn-check" id="btnCheck" onclick="checkAnswer()">
+            <button class="action-button primary" id="btnCheck" onclick="checkAnswer()">
                 Check Answer
             </button>
-            <button class="btn-next" id="btnNext" onclick="nextQuestion()">
-                Next Question
+            <button class="action-button primary" id="btnNext" onclick="nextQuestion()" style="display: none;">
+                Next Question →
             </button>
-            <button class="btn-submit" id="btnSubmit" onclick="submitQuiz()">
-                Submit Quiz
+            <button class="action-button primary" id="btnSubmit" onclick="submitQuiz()" style="display: none;">
+                Finish Quiz
             </button>
-            <button class="btn-secondary" onclick="goHome()">
-                Back to Home
+            <button class="action-button secondary" onclick="goHome()">
+                Exit
             </button>
         </div>
     </div>
 
     <div class="results-card" id="resultsCard">
-        <h2>Quiz Complete!</h2>
+        <h2 class="results-title">Quiz Complete</h2>
         
         <div class="score-circle" id="scoreCircle">
             <div>
                 <span id="scorePercentage">0</span>%
-                <div class="score-label" id="scoreLabel">Score</div>
+                <div class="score-label">Score</div>
             </div>
         </div>
 
@@ -315,21 +378,21 @@ button {
 
         <div class="results-details">
             <div class="detail-item">
-                <span>Correct Answers:</span>
+                <span>Correct Answers</span>
                 <strong id="correctCount">0</strong>
             </div>
             <div class="detail-item">
-                <span>Incorrect Answers:</span>
+                <span>Incorrect Answers</span>
                 <strong id="incorrectCount">0</strong>
             </div>
             <div class="detail-item">
-                <span>Total Questions:</span>
+                <span>Total Questions</span>
                 <strong id="totalCount">0</strong>
             </div>
         </div>
 
-        <button class="btn-home" onclick="goHome()">
-            Return to Home 
+        <button class="action-button" onclick="goHome()" style="max-width: 300px; margin: 40px auto 0;">
+            Return to Home
         </button>
     </div>
 </div>
@@ -340,7 +403,6 @@ let currentQuestionIndex = 0;
 let userAnswers = [];
 let scores = [];
 
-// Load quiz data
 window.addEventListener('DOMContentLoaded', function() {
     const quizDataStr = sessionStorage.getItem('quizData');
     
@@ -377,41 +439,33 @@ function loadQuestion() {
     const question = questions[currentQuestionIndex];
     console.log('Loading question', currentQuestionIndex, ':', question);
     
-    // Update UI
     document.getElementById('questionNumber').textContent = 
         `Question ${currentQuestionIndex + 1} of ${questions.length}`;
     document.getElementById('questionText').textContent = question.question;
     document.getElementById('answerInput').value = '';
     
-    // Update progress
     const progress = ((currentQuestionIndex) / questions.length) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
     
-    // Reset ALL feedback and button states
     const feedback = document.getElementById('feedback');
-    feedback.className = 'answer-feedback'; // Reset all classes
+    feedback.className = 'answer-feedback';
     feedback.innerHTML = '';
     
     const correctAnswer = document.getElementById('correctAnswer');
-    correctAnswer.className = 'correct-answer'; // Reset all classes
-    correctAnswer.innerHTML = '';
+    correctAnswer.className = 'correct-answer';
+    document.getElementById('correctAnswerText').innerHTML = '';
     
-    // Reset buttons
     const btnCheck = document.getElementById('btnCheck');
     const btnNext = document.getElementById('btnNext');
     const btnSubmit = document.getElementById('btnSubmit');
     
     btnCheck.style.display = 'block';
     btnCheck.disabled = false;
-    btnCheck.textContent = 'Check Answer ✓';
+    btnCheck.textContent = 'Check Answer';
     
-    btnNext.className = 'btn-next'; // Remove 'show' class
     btnNext.style.display = 'none';
-    
-    btnSubmit.className = 'btn-submit'; // Remove 'show' class
     btnSubmit.style.display = 'none';
     
-    // Enable input
     document.getElementById('answerInput').disabled = false;
     document.getElementById('answerInput').focus();
 }
@@ -427,13 +481,11 @@ async function checkAnswer() {
     const question = questions[currentQuestionIndex];
     console.log('Checking answer for question:', question.question);
     
-    // Disable input and check button
     document.getElementById('answerInput').disabled = true;
     document.getElementById('btnCheck').disabled = true;
     document.getElementById('btnCheck').textContent = 'Checking...';
 
     try {
-        // Send to backend for verification
         const response = await fetch('/verify_answer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -455,36 +507,29 @@ async function checkAnswer() {
             throw new Error(data.error);
         }
 
-        // Store result
         userAnswers.push(userAnswer);
         scores.push(data.is_correct === true || data.is_correct === 'true');
 
-        // Show feedback
         const feedback = document.getElementById('feedback');
         feedback.classList.add('show');
         
         if (data.is_correct === true || data.is_correct === 'true') {
             feedback.classList.add('correct');
-            feedback.innerHTML = 'Correct! ' + (data.feedback || 'Well done!');
+            feedback.innerHTML = '✓ ' + (data.feedback || 'Correct answer');
         } else {
             feedback.classList.add('incorrect');
-            feedback.innerHTML = 'Incorrect. ' + (data.feedback || '');
+            feedback.innerHTML = '✗ ' + (data.feedback || 'Incorrect answer');
             
-            // Show correct answer
             const correctAnswerDiv = document.getElementById('correctAnswer');
-            correctAnswerDiv.innerHTML = `<strong>Correct Answer:</strong> ${question.answer}`;
+            document.getElementById('correctAnswerText').textContent = question.answer;
             correctAnswerDiv.classList.add('show');
         }
 
-        // Hide check button
         document.getElementById('btnCheck').style.display = 'none';
         
-        // Show appropriate next button
         if (currentQuestionIndex < questions.length - 1) {
-            document.getElementById('btnNext').classList.add('show');
             document.getElementById('btnNext').style.display = 'block';
         } else {
-            document.getElementById('btnSubmit').classList.add('show');
             document.getElementById('btnSubmit').style.display = 'block';
         }
 
@@ -492,10 +537,9 @@ async function checkAnswer() {
         console.error('Error:', e);
         alert('Error checking answer: ' + e.message);
         
-        // Re-enable for retry
         document.getElementById('answerInput').disabled = false;
         document.getElementById('btnCheck').disabled = false;
-        document.getElementById('btnCheck').textContent = 'Check Answer ✓';
+        document.getElementById('btnCheck').textContent = 'Check Answer';
     }
 }
 
@@ -511,7 +555,6 @@ function submitQuiz() {
 }
 
 function showResults() {
-    // Calculate score
     const correctCount = scores.filter(s => s === true).length;
     const totalCount = scores.length;
     const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
@@ -519,33 +562,29 @@ function showResults() {
     console.log('Final scores:', scores);
     console.log('Correct:', correctCount, 'Total:', totalCount, 'Percentage:', percentage);
 
-    // Hide quiz card, show results
-    document.getElementById('quizCard').style.display = 'none';
-    document.getElementById('progressBar').style.display = 'none';
+    document.getElementById('quizContent').style.display = 'none';
+    document.querySelector('.progress-bar').style.display = 'none';
     document.getElementById('resultsCard').classList.add('show');
 
-    // Update score display
     document.getElementById('scorePercentage').textContent = percentage;
     document.getElementById('correctCount').textContent = correctCount;
     document.getElementById('incorrectCount').textContent = totalCount - correctCount;
     document.getElementById('totalCount').textContent = totalCount;
 
-    // Set score circle style and message
     const scoreCircle = document.getElementById('scoreCircle');
     const message = document.getElementById('resultsMessage');
     
     if (percentage >= 80) {
         scoreCircle.className = 'score-circle excellent';
-        message.textContent = 'Excellent work! You have a great understanding!';
+        message.textContent = 'Excellent work! You have a great understanding.';
     } else if (percentage >= 60) {
         scoreCircle.className = 'score-circle good';
-        message.textContent = 'Good job! Keep practicing to improve!';
+        message.textContent = 'Good job! Keep practicing to improve.';
     } else {
         scoreCircle.className = 'score-circle needs-improvement';
-        message.textContent = 'Keep learning! Review the material and try again!';
+        message.textContent = 'Keep learning! Review the material and try again.';
     }
 
-    // Clear session storage
     sessionStorage.removeItem('quizData');
 }
 

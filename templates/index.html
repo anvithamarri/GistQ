@@ -3,325 +3,595 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Text Summarizer & Quiz</title>
+<title>GistQ - Smart Summarization & Quiz</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: Geneva, sans-serif;
-    background: #a8dadc;
-    min-height: 100vh;
-    padding: 20px;
-    color: #1a1a1a;
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
-.container { max-width: 900px; margin: 0 auto; }
-.header { text-align: center; margin-bottom: 30px; color: #1a1a1a; }
-.header h1 { font-size: 2.5em; margin-bottom: 10px; }
-.header p { font-size: 1.1em; }
 
-.main-card {
-    background: #f0f8ff;
-    border-radius: 20px;
-    padding: 35px;
-    box-shadow: 0 8px 30px rgba(168, 218, 220, 0.3);
-    margin-bottom: 20px;
+body {
+    font-family: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
+    background: #faf8f5;
+    min-height: 100vh;
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+.container { 
+    max-width: 100%;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header { 
+    text-align: center; 
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.logo {
+    font-size: 3em;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.tagline {
+    font-size: 1.1em;
+    color: #666666;
+    font-weight: 300;
+}
+
+.main-content {
+    flex: 1;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 60px 40px;
 }
 
 .input-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    border-bottom: 3px solid #a8dadc;
-    padding-bottom: 0;
+    gap: 40px;
+    margin-bottom: 50px;
+    justify-content: center;
+    position: relative;
+}
+
+.tab-indicator {
+    position: absolute;
+    bottom: -2px;
+    height: 2px;
+    background: linear-gradient(90deg, #64b5f6, #90caf9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tab-button {
-    padding: 12px 20px;
+    padding: 12px 0;
     background: transparent;
-    border-color: #08afec;
-    border-bottom: 3px solid transparent;
+    border: none;
     cursor: pointer;
-    font-family: Geneva, sans-serif;
+    font-family: inherit;
     font-size: 1em;
-    font-weight: 600;
-    color: #1a1a1a;
-    transition: all 0.3s;
-    margin-bottom: -3px;
+    font-weight: 400;
+    color: #999999;
+    transition: color 0.3s;
+    position: relative;
 }
 
-.tab-button:hover { background: #dbefff; }
-.tab-button.active { border-bottom-color: #7fc6cc; }
+.tab-button.active { 
+    color: #2196f3;
+    font-weight: 500;
+}
 
-.tab-content { display: none; margin-bottom: 20px; }
+.tab-content { 
+    display: none; 
+    margin-bottom: 40px;
+    animation: fadeIn 0.4s ease;
+}
+
 .tab-content.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-label {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #999999;
+    margin-bottom: 12px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
 
 textarea {
     width: 100%;
-    min-height: 200px;
-    padding: 15px;
-    border: 2px solid #a8dadc;
-    border-radius: 12px;
-    font-size: 1em;
+    min-height: 300px;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.05em;
     resize: vertical;
-    background: #dbefff;
+    background: transparent;
     color: #1a1a1a;
-    font-family: Geneva, sans-serif;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    line-height: 1.8;
 }
 
-textarea:focus { outline: none; border-color: #7fc6cc; background: #e0f0f5; }
+textarea:focus { 
+    outline: none; 
+    border-bottom-color: #e3f2fd;
+}
+
+textarea::placeholder {
+    color: #cccccc;
+}
+
+.word-count {
+    margin-top: 12px;
+    font-size: 0.9em;
+    color: #999999;
+    font-weight: 300;
+}
 
 .url-input {
     width: 100%;
-    padding: 15px;
-    border: 2px solid #a8dadc;
-    border-radius: 12px;
-    font-size: 1em;
-    background: #dbefff;
+    padding: 20px 0;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.05em;
+    background: transparent;
     color: #1a1a1a;
+    font-family: inherit;
+    transition: border-color 0.3s;
 }
 
-.url-input:focus { outline: none; border-color: #7fc6cc; background: #e0f0f5; }
+.url-input:focus {
+    outline: none;
+    border-bottom-color: #64b5f6;
+}
+
+.url-input::placeholder {
+    color: #cccccc;
+}
 
 .file-upload-area {
-    border: 3px dashed #a8dadc;
-    border-radius: 12px;
-    padding: 40px;
+    border: 2px dashed #f0f0f0;
+    border-radius: 0;
+    padding: 80px 40px;
     text-align: center;
-    background: #dbefff;
+    background: transparent;
     cursor: pointer;
     transition: all 0.3s;
 }
 
-.file-upload-area:hover { border-color: #7fc6cc; background: #e0f0f5; }
-.file-upload-area.dragover { border-color: #7fc6cc; background: #e0f0f5; transform: scale(1.02); }
+.file-upload-area:hover {
+    border-color: #64b5f6;
+    background: #fafbff;
+}
 
-.file-upload-icon { font-size: 3em; margin-bottom: 10px; }
-.file-upload-text { font-weight: 600; margin-bottom: 5px; }
-.file-upload-hint { font-size: 0.9em; color: #555; }
+.file-upload-area.dragover {
+    border-color: #2196f3;
+    background: #f0f7ff;
+}
+
+.file-upload-icon {
+    font-size: 3em;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.file-upload-text {
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+    font-size: 1.05em;
+}
+
+.file-upload-hint {
+    font-size: 0.9em;
+    color: #999999;
+    font-weight: 300;
+}
+
 .file-input { display: none; }
 
 .file-selected {
-    margin-top: 15px;
-    padding: 15px;
-    background: #cce7eb;
-    border-radius: 8px;
+    margin-top: 20px;
+    padding: 20px 0;
+    background: transparent;
+    border-bottom: 1px solid #f0f0f0;
     display: none;
     align-items: center;
     justify-content: space-between;
 }
 
 .file-selected.show { display: flex; }
-.file-info { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 400;
+    font-size: 0.95em;
+    color: #1a1a1a;
+}
 
 .remove-file {
-    background: #ffc0cb;
-    color: #1a1a1a;
+    background: transparent;
+    color: #999999;
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 0;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 0.9em;
+    transition: color 0.3s;
+    text-decoration: underline;
 }
 
-.remove-file:hover { background: #ffb3c1; }
-
-.quiz-config {
-    background: #e0f0f5;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
+.remove-file:hover {
+    color: #1a1a1a;
 }
 
-.quiz-config label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
+.config-section {
+    margin-top: 60px;
+    padding-top: 60px;
+    border-top: 1px solid #f0f0f0;
 }
 
-.quiz-config select {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #a8dadc;
-    border-radius: 8px;
-    font-size: 1em;
-    background: white;
-    margin-bottom: 15px;
+.level-options {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+    position: relative;
+    background: #b3dbf2;
+    border-radius: 50px;
+    padding: 4px;
 }
 
-.level-options { display: flex; gap: 10px; margin-top: 15px; }
+.level-slider {
+    position: absolute;
+    background: linear-gradient(135deg, #64b5f6, #90caf9);
+    border-radius: 50px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
 .level-card {
     flex: 1;
-    border: 3px solid #cce7eb;
-    border-radius: 12px;
-    padding: 15px;
+    padding: 14px 24px;
     cursor: pointer;
-    background: #e6f3f5;
-    transition: 0.3s;
+    background: transparent;
+    transition: color 0.3s;
+    text-align: center;
+    position: relative;
+    z-index: 2;
 }
-.level-card.active { border-color: #a8dadc; background: #dbefff; }
 
-button {
-    padding: 12px 25px;
-    font-size: 1em;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.level-card input[type="radio"] {
+    display: none;
+}
+
+.level-name {
+    font-weight: 500;
+    color: #666666;
+    font-size: 0.95em;
+    transition: color 0.3s;
+}
+
+.level-card.active .level-name {
+    color: #1a1a1a;
     font-weight: 600;
-    margin-top: 20px;
-    margin-right: 10px;
 }
-.btn-primary { background: #a8dadc; color: #1a1a1a; }
-.btn-primary:hover { background: #7fc6cc; }
-.btn-primary:disabled { background: #cce7eb; cursor: not-allowed; }
 
-.btn-secondary { background: #dbefff; color: #1a1a1a; }
-.btn-secondary:hover { background: #b0d4dc; }
+.level-description {
+    font-size: 0.75em;
+    color: #999999;
+    margin-top: 2px;
+    font-weight: 300;
+}
 
-.loading { display: none; text-align: center; padding: 30px; background: #e0f0f5; border-radius: 12px; margin-top: 20px; }
+.level-card.active .level-description {
+    color: #666666;
+}
+
+.quiz-config {
+    margin-bottom: 40px;
+}
+
+.quiz-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.quiz-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: #f0f0f0;
+    outline: none;
+    border-radius: 2px;
+}
+
+.quiz-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #64b5f6, #90caf9);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+}
+
+.quiz-slider::-webkit-slider-thumb:hover {
+    background: linear-gradient(135deg, #42a5f5, #64b5f6);
+    transform: scale(1.15);
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.4);
+}
+
+.quiz-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #64b5f6, #90caf9);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+}
+
+.quiz-slider::-moz-range-thumb:hover {
+    background: linear-gradient(135deg, #42a5f5, #64b5f6);
+    transform: scale(1.15);
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.4);
+}
+
+.quiz-value {
+    font-size: 1.2em;
+    font-weight: 400;
+    color: #2196f3;
+    min-width: 100px;
+    text-align: right;
+}
+
+.action-button {
+    width: 100%;
+    padding: 20px;
+    font-size: 1em;
+    border: 1px solid #f0f0f0;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 400;
+    font-family: inherit;
+    transition: all 0.3s;
+    margin-top: 20px;
+    color: #1a1a1a;
+}
+
+.action-button:hover {
+    background: #f0f7ff;
+    border-color: #90caf9;
+}
+
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-button:disabled:hover {
+    background: transparent;
+    border-color: #f0f0f0;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 80px 40px;
+    margin-top: 40px;
+}
+
 .loading.show { display: block; }
-.spinner { border: 4px solid #dbefff; border-top: 4px solid #a8dadc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.results { display: none; margin-top: 20px; }
+.spinner {
+    border: 2px solid #f0f0f0;
+    border-top: 2px solid #64b5f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 24px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #999999;
+    font-size: 0.95em;
+    font-weight: 300;
+}
+
+.results {
+    display: none;
+    margin-top: 60px;
+    padding-top: 60px;
+    border-top: 1px solid #f0f0f0;
+    animation: fadeIn 0.4s ease;
+}
+
 .results.show { display: block; }
-.summary-box { 
-    background: #dbefff; 
-    padding: 25px; 
-    border-radius: 12px; 
-    margin-bottom: 20px;
-    line-height: 1.8;
-    font-size: 1.05em;
+
+.summary-header {
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #999999;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.summary-text {
+    color: #1a1a1a;
+    font-size: 1.1em;
+    line-height: 1.9;
+    font-weight: 300;
+    margin-bottom: 32px;
 }
 
 .summary-meta {
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 2px solid #a8dadc;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
     font-size: 0.9em;
-    color: #555;
+    color: #999999;
+    font-weight: 300;
 }
 
-.btn-quiz {
-    background: #90e0a8;
-    color: #1a1a1a;
-    padding: 15px 30px;
-    font-size: 1.1em;
-    margin-top: 20px;
+.summary-meta span strong {
+    color: #2196f3;
+    font-weight: 500;
 }
 
-.btn-quiz:hover {
-    background: #70d088;
+.error {
+    background: #fff5f5;
+    border-left: 3px solid #ffcccc;
+    color: #cc0000;
+    padding: 20px;
+    margin-bottom: 40px;
+    display: none;
+    font-size: 0.95em;
+    font-weight: 400;
 }
 
-.error { background: #ffc0cb; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; font-weight: 600; }
 .error.show { display: block; }
 
-.level-name { font-weight: 600; }
-.level-description { font-size: 0.9em; }
-
-@media(max-width: 768px){ 
-    .level-options { flex-direction: column; } 
-    .input-tabs { overflow-x: auto; }
+@media(max-width: 768px){
+    .logo { font-size: 2.2em; }
+    .main-content { padding: 40px 20px; }
+    .input-tabs { gap: 24px; }
+    .level-options { flex-direction: column; border-radius: 0; background: transparent; padding: 0; }
+    .level-slider { display: none; }
+    .level-card { border-bottom: 1px solid #f0f0f0; padding: 20px 0; }
+    .level-card:last-child { border-bottom: none; }
+    .level-card.active { background: #fafbff; }
 }
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Smart Text Summarizer & Quiz</h1>
+        <div class="logo">GistQ</div>
+        <div class="tagline">Smart Summarization & Knowledge Testing</div>
     </div>
 
-    <div class="main-card">
+    <div class="main-content">
         <div class="error" id="errorBox"></div>
 
         <div class="input-tabs">
-            <button type="button" class="tab-button active" onclick="switchTab('text')">Text Input</button>
-            <button type="button" class="tab-button" onclick="switchTab('url')">URL</button>
-            <button type="button" class="tab-button" onclick="switchTab('file')">File Upload</button>
+            <button type="button" class="tab-button active" onclick="switchTab('text', 0)" data-index="0">Text</button>
+            <button type="button" class="tab-button" onclick="switchTab('url', 1)" data-index="1">URL</button>
+            <button type="button" class="tab-button" onclick="switchTab('file', 2)" data-index="2">File</button>
+            <div class="tab-indicator" id="tabIndicator"></div>
         </div>
 
         <form id="summarizerForm">
             <!-- Text Input Tab -->
             <div id="text-tab" class="tab-content active">
-                <label class="section-title">Input Text</label>
-                <textarea id="inputText" placeholder="Paste your text here..."></textarea>
-                <p style="margin-top:5px; font-size:0.9em; color:#333;">
-                    Input Word Count: <span id="inputWordCount">0</span>
-                </p>
+                <label class="section-label">Input Text</label>
+                <textarea id="inputText" placeholder="Paste your article, chapter, or any text content here..."></textarea>
+                <div class="word-count">
+                    <span id="inputWordCount">0</span> words
+                </div>
             </div>
 
             <!-- URL Input Tab -->
             <div id="url-tab" class="tab-content">
-                <label class="section-title">Enter Website URL</label>
+                <label class="section-label">Website URL</label>
                 <input type="url" id="inputUrl" class="url-input" placeholder="https://example.com/article">
             </div>
 
             <!-- File Upload Tab -->
             <div id="file-tab" class="tab-content">
-                <label class="section-title">Upload File</label>
+                <label class="section-label">Upload File</label>
                 <div class="file-upload-area" id="fileUploadArea">
-                    <div class="file-upload-icon"></div>
+                    <div class="file-upload-icon">📄</div>
                     <div class="file-upload-text">Click to upload or drag and drop</div>
-                    <div class="file-upload-hint">Supports: PDF, TXT (Max 10MB)</div>
+                    <div class="file-upload-hint">PDF or TXT • Maximum 10MB</div>
                 </div>
                 <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
                 <div class="file-selected" id="fileSelected">
                     <div class="file-info">
-                        <span></span>
+                        <span>📎</span>
                         <span id="fileName"></span>
                     </div>
                     <button type="button" class="remove-file" onclick="removeFile()">Remove</button>
                 </div>
             </div>
 
-            <label class="section-title" style="display:block; margin-top:20px;">Summarization Level</label>
-            <div class="level-options">
-                <div class="level-card active">
-                    <input type="radio" name="level" value="abstract" checked hidden>
-                    <div class="level-name">Abstract</div>
-                    <div class="level-description">Brief (30-60 words)</div>
+            <div class="config-section">
+                <label class="section-label">Summarization Level</label>
+                <div class="level-options">
+                    <div class="level-slider" id="levelSlider"></div>
+                    <div class="level-card active" onclick="selectLevel(0)">
+                        <input type="radio" name="level" value="abstract" checked>
+                        <div class="level-name">Abstract</div>
+                        <div class="level-description">30-60 words</div>
+                    </div>
+                    <div class="level-card" onclick="selectLevel(1)">
+                        <input type="radio" name="level" value="summary">
+                        <div class="level-name">Summary</div>
+                        <div class="level-description">80-130 words</div>
+                    </div>
+                    <div class="level-card" onclick="selectLevel(2)">
+                        <input type="radio" name="level" value="article">
+                        <div class="level-name">Article</div>
+                        <div class="level-description">150-250 words</div>
+                    </div>
                 </div>
-                <div class="level-card">
-                    <input type="radio" name="level" value="summary" hidden>
-                    <div class="level-name">Summary</div>
-                    <div class="level-description">Balanced (80-130 words)</div>
-                </div>
-                <div class="level-card">
-                    <input type="radio" name="level" value="article" hidden>
-                    <div class="level-name">Article</div>
-                    <div class="level-description">Detailed (150-250 words)</div>
+
+                <div class="quiz-config">
+                    <label class="section-label">Number of Questions</label>
+                    <div class="quiz-slider-container">
+                        <input type="range" id="quizSlider" class="quiz-slider" min="3" max="10" value="5" step="1">
+                        <div class="quiz-value"><span id="quizValue">5</span> questions</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="quiz-config">
-                <label>Number of Quiz Questions:</label>
-                <select id="numQuestions">
-                    <option value="3">3 Questions</option>
-                    <option value="5" selected>5 Questions</option>
-                    <option value="10">10 Questions</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-primary" id="submitBtn">Generate Summary & Quiz</button>
-            <button type="button" class="btn-secondary" onclick="resetForm()">Clear</button>
+            <button type="submit" class="action-button" id="submitBtn">Generate Summary & Quiz</button>
         </form>
 
         <div class="loading" id="loadingBox">
             <div class="spinner"></div>
-            <p id="loadingText">Generating summary and questions...</p>
+            <p class="loading-text">Processing your content...</p>
         </div>
 
         <div class="results" id="resultsBox">
-            <div class="summary-box">
-                <strong style="font-size: 1.1em;">Summary:</strong>
-                <p id="summaryText" style="margin-top: 10px;"></p>
-                <div class="summary-meta">
-                    <span>Word Count: <strong id="wordCount">0</strong></span>
-                    <span>Level: <strong id="summaryLevel">-</strong></span>
-                </div>
+            <div class="summary-header">Summary</div>
+            <div class="summary-text" id="summaryText"></div>
+            <div class="summary-meta">
+                <span><span id="wordCount">0</span> words</span>
+                <span><span id="summaryLevel">—</span> level</span>
             </div>
-            <button type="button" class="btn-quiz" onclick="startQuiz()">Start Quiz</button>
+            <button type="button" class="action-button" onclick="startQuiz()">Start Quiz →</button>
         </div>
     </div>
 </div>
@@ -331,15 +601,68 @@ let currentTab = 'text';
 let selectedFile = null;
 let quizData = null;
 
+// Initialize tab indicator
+function updateTabIndicator() {
+    const activeTab = document.querySelector('.tab-button.active');
+    const indicator = document.getElementById('tabIndicator');
+    const rect = activeTab.getBoundingClientRect();
+    const parentRect = activeTab.parentElement.getBoundingClientRect();
+    indicator.style.left = (rect.left - parentRect.left) + 'px';
+    indicator.style.width = rect.width + 'px';
+}
+
+// Initialize level slider
+function updateLevelSlider() {
+    const activeLevel = document.querySelector('.level-card.active');
+    const slider = document.getElementById('levelSlider');
+    const cards = document.querySelectorAll('.level-card');
+    const index = Array.from(cards).indexOf(activeLevel);
+    const cardWidth = 100 / cards.length;
+    slider.style.left = (index * cardWidth) + '%';
+    slider.style.width = cardWidth + '%';
+    slider.style.height = activeLevel.offsetHeight + 'px';
+}
+
+window.addEventListener('load', () => {
+    updateTabIndicator();
+    updateLevelSlider();
+});
+
+window.addEventListener('resize', () => {
+    updateTabIndicator();
+    updateLevelSlider();
+});
+
 // Tab switching
-function switchTab(tab) {
+function switchTab(tab, index) {
     currentTab = tab;
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById(`${tab}-tab`).classList.add('active');
+    updateTabIndicator();
     hideError();
 }
+
+// Level selection
+function selectLevel(index) {
+    const cards = document.querySelectorAll('.level-card');
+    cards.forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+        if (i === index) {
+            card.querySelector('input[type="radio"]').checked = true;
+        }
+    });
+    updateLevelSlider();
+}
+
+// Quiz slider
+const quizSlider = document.getElementById('quizSlider');
+const quizValue = document.getElementById('quizValue');
+
+quizSlider.addEventListener('input', () => {
+    quizValue.textContent = quizSlider.value;
+});
 
 // File upload handling
 const fileUploadArea = document.getElementById('fileUploadArea');
@@ -377,15 +700,6 @@ function removeFile() {
     fileSelected.classList.remove('show');
 }
 
-// Level card selection
-document.querySelectorAll('.level-card').forEach(card=>{
-    card.addEventListener('click',function(){
-        document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('active'));
-        this.classList.add('active');
-        this.querySelector('input[type="radio"]').checked=true;
-    });
-});
-
 // Live input word count
 const inputText = document.getElementById('inputText');
 const inputWordCount = document.getElementById('inputWordCount');
@@ -400,7 +714,7 @@ document.getElementById('summarizerForm').addEventListener('submit', async funct
     e.preventDefault();
     
     const level = document.querySelector('input[name="level"]:checked').value;
-    const numQuestions = document.getElementById('numQuestions').value;
+    const numQuestions = quizSlider.value;
     let formData = new FormData();
     formData.append('level', level);
     formData.append('num_questions', numQuestions);
@@ -473,23 +787,8 @@ function startQuiz() {
         showError('No quiz questions available');
         return;
     }
-    
-    // Store quiz data and navigate to quiz page
     sessionStorage.setItem('quizData', JSON.stringify(quizData));
     window.location.href = '/quiz';
-}
-
-function resetForm() { 
-    document.getElementById('summarizerForm').reset(); 
-    document.getElementById('inputText').value = '';
-    document.getElementById('inputUrl').value = '';
-    removeFile();
-    hideResults(); 
-    hideError(); 
-    inputWordCount.textContent = '0';
-    quizData = null;
-    document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('active'));
-    document.querySelector('.level-card').classList.add('active'); 
 }
 </script>
 </body>

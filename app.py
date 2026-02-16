@@ -162,14 +162,14 @@ Return ONLY the JSON array now:"""
                         if start != -1 and end > start:
                             json_str = remaining[start:end]
                             questions = json.loads(json_str)
-                            print("✓ Successfully parsed with line-by-line search")
+                            print(" Successfully parsed with line-by-line search")
                             break
             except:
                 pass
         
         # If all parsing attempts failed
         if questions is None:
-            print("✗ All JSON parsing attempts failed")
+            print("All JSON parsing attempts failed")
             print(f"Response type: {type(raw)}")
             print(f"Response length: {len(raw)}")
             raise Exception("Could not extract valid JSON from Groq response")
@@ -199,16 +199,16 @@ Return ONLY the JSON array now:"""
         
         # Return exactly the number requested (or less if not enough generated)
         result = valid_questions[:num_questions]
-        print(f"✓ Returning {len(result)} valid questions\n")
+        print(f"Returning {len(result)} valid questions\n")
         
         return result
             
     except json.JSONDecodeError as e:
-        print(f"✗ JSON parsing error: {e}")
+        print(f"JSON parsing error: {e}")
         print(f"Problematic content: {raw[:500]}...")
         raise Exception(f"Invalid JSON in Groq response: {str(e)}")
     except Exception as e:
-        print(f"✗ Error in generate_questions: {e}")
+        print(f"Error in generate_questions: {e}")
         import traceback
         traceback.print_exc()
         raise Exception(f"Failed to generate questions: {str(e)}")
@@ -387,14 +387,14 @@ def summarize():
         print(f"{'='*50}\n")
         
         # Generate summary using BART
-        print("📝 Generating summary with BART...")
+        print("Generating summary with BART...")
         summary = generate_summary(text, level)
-        print(f"✓ Summary generated: {len(summary.split())} words\n")
+        print(f"Summary generated: {len(summary.split())} words\n")
         
         # Generate questions using Groq
-        print(f"❓ Generating {num_questions} questions with Groq...")
+        print(f"Generating {num_questions} questions with Groq...")
         questions = generate_questions_groq(text, num_questions)
-        print(f"✓ Generated {len(questions)} questions\n")
+        print(f"Generated {len(questions)} questions\n")
         
         if not summary:
             return jsonify({"error": "Failed to generate summary"}), 500
