@@ -17,6 +17,126 @@ body {
     min-height: 100vh;
     color: #1a1a1a;
     line-height: 1.6;
+    display: flex;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    background: #ffffff;
+    border-right: 1px solid #e8e6e3;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid #e8e6e3;
+}
+
+.sidebar-logo {
+    font-size: 1.4em;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.sidebar-subtitle {
+    font-size: 0.8em;
+    color: #999999;
+    font-weight: 300;
+}
+
+.history-list {
+    padding: 12px 0;
+}
+
+.history-item {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f5f3f0;
+}
+
+.history-item:hover {
+    background: #f5f3f0;
+}
+
+.history-item.active {
+    background: #e8f4fd;
+    border-left: 3px solid #64b5f6;
+}
+
+.history-title {
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-meta {
+    font-size: 0.75em;
+    color: #999999;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.history-delete {
+    background: transparent;
+    border: none;
+    color: #999999;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 0.85em;
+    transition: color 0.2s;
+}
+
+.history-delete:hover {
+    color: #ff4444;
+}
+
+.empty-history {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999999;
+    font-size: 0.9em;
+}
+
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    background: #ffffff;
+    border: 1px solid #e8e6e3;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 101;
+    font-size: 1.2em;
+}
+
+/* Main Content */
+.main-wrapper {
+    margin-left: 280px;
+    flex: 1;
+    width: calc(100% - 280px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.main-wrapper.expanded {
+    margin-left: 0;
+    width: 100%;
 }
 
 .container { 
@@ -484,6 +604,23 @@ textarea::placeholder {
 .error.show { display: block; }
 
 @media(max-width: 768px){
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    
     .logo { font-size: 2.2em; }
     .main-content { padding: 40px 20px; }
     .input-tabs { gap: 24px; }
@@ -496,6 +633,22 @@ textarea::placeholder {
 </style>
 </head>
 <body>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">GistQ</div>
+        <div class="sidebar-subtitle">History</div>
+    </div>
+    <div class="history-list" id="historyList">
+        <div class="empty-history">No summaries yet</div>
+    </div>
+</div>
+
+<!-- Sidebar Toggle -->
+<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- Main Content -->
+<div class="main-wrapper" id="mainWrapper">
 <div class="container">
     <div class="header">
         <div class="logo">GistQ</div>
@@ -532,14 +685,12 @@ textarea::placeholder {
             <div id="file-tab" class="tab-content">
                 <label class="section-label">Upload File</label>
                 <div class="file-upload-area" id="fileUploadArea">
-                    <div class="file-upload-icon">📄</div>
                     <div class="file-upload-text">Click to upload or drag and drop</div>
                     <div class="file-upload-hint">PDF or TXT • Maximum 10MB</div>
                 </div>
                 <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
                 <div class="file-selected" id="fileSelected">
                     <div class="file-info">
-                        <span>📎</span>
                         <span id="fileName"></span>
                     </div>
                     <button type="button" class="remove-file" onclick="removeFile()">Remove</button>
@@ -595,11 +746,130 @@ textarea::placeholder {
         </div>
     </div>
 </div>
+</div>
 
 <script>
 let currentTab = 'text';
 let selectedFile = null;
 let quizData = null;
+let currentSessionId = null;
+
+// Load history on page load
+window.addEventListener('load', () => {
+    updateTabIndicator();
+    updateLevelSlider();
+    loadHistory();
+});
+
+// Load history from API
+async function loadHistory() {
+    try {
+        const response = await fetch('/api/history');
+        const data = await response.json();
+        
+        const historyList = document.getElementById('historyList');
+        
+        if (!data.sessions || data.sessions.length === 0) {
+            historyList.innerHTML = '<div class="empty-history">No summaries yet</div>';
+            return;
+        }
+        
+        historyList.innerHTML = data.sessions.map(session => `
+            <div class="history-item" onclick="loadSession(${session.id}, this)">
+                <div class="history-title">${session.title}</div>
+                <div class="history-meta">
+                    <span>${session.level} • ${session.word_count}w</span>
+                    <button class="history-delete" onclick="event.stopPropagation(); deleteSession(${session.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading history:', error);
+    }
+}
+
+// Load specific session
+async function loadSession(sessionId, element) {
+    try {
+        const response = await fetch(`/api/session/${sessionId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Highlight active item
+        document.querySelectorAll('.history-item').forEach(item => item.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
+        
+        // Display summary
+        document.getElementById('summaryText').textContent = data.summary_text;
+        document.getElementById('wordCount').textContent = data.word_count;
+        document.getElementById('summaryLevel').textContent = data.level.charAt(0).toUpperCase() + data.level.slice(1);
+        
+        // Store questions for quiz - need to format them correctly
+        quizData = data.questions.map(q => ({
+            question: q.question,
+            answer: q.answer,
+            id: q.id
+        }));
+        currentSessionId = sessionId;
+        
+        showResults();
+        document.getElementById('resultsBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Close sidebar on mobile
+        if (window.innerWidth <= 768) {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('open');
+        }
+    } catch (error) {
+        console.error('Error loading session:', error);
+        showError('Failed to load session: ' + error.message);
+    }
+}
+
+// Delete session
+async function deleteSession(sessionId) {
+    if (!confirm('Delete this summary?')) return;
+    
+    try {
+        const response = await fetch(`/api/session/${sessionId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadHistory();
+            if (currentSessionId === sessionId) {
+                hideResults();
+                currentSessionId = null;
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting session:', error);
+        showError('Failed to delete session');
+    }
+}
+
+// Toggle sidebar on mobile
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainWrapper = document.getElementById('mainWrapper');
+    
+    if (window.innerWidth > 768) {
+        sidebar.classList.toggle('collapsed');
+        mainWrapper.classList.toggle('expanded');
+    } else {
+        sidebar.classList.toggle('open');
+    }
+}
 
 // Initialize tab indicator
 function updateTabIndicator() {
@@ -778,6 +1048,11 @@ function displayResults(data) {
     document.getElementById('wordCount').textContent = data.word_count || data.summary.split(' ').length;
     document.getElementById('summaryLevel').textContent = data.level.charAt(0).toUpperCase() + data.level.slice(1);
     quizData = data.questions;
+    currentSessionId = data.session_id;
+    
+    // Reload history to show new item
+    loadHistory();
+    
     showResults();
     document.getElementById('resultsBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
