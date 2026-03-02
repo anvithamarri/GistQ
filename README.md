@@ -2,6 +2,18 @@
 
 A powerful AI-powered web application that summarizes text from multiple sources and automatically generates educational quizzes to test comprehension.
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Performance Considerations](#performance-considerations)
+- [License](#license)
+- [Future Enhancements](#future-enhancements)
+- [Contributing](#contributing)
+
 ## Features
 
 - **Multi-Source Support**: Summarize content from:
